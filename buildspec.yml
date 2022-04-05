@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - echo Executing Install Phase
+    finally:
+      - echo Executing Install Finally
+  pre_build:
+    commands:
+      - echo Executing Pre Build Phase
+
+    finally:
+      - echo Executing Pre Build Finally
+  build:
+    commands:
+      - echo Executing Build Phase
+      - npm ci
+      - npm run build
+    finally:
+      - echo Executing Build Finally
+  post_build:
+    commands:
+      - echo Executing Post Build Phase
+      - aws s3 sync dist s3://challa-lab --delete --cache-control no-cache
+      - aws cloudfront create-invalidation --distribution-id E1Z8YPDUSQYOD7 --paths "/*"
